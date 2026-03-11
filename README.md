@@ -1,4 +1,4 @@
-# Modular Neural Network (C++)
+# Neural Network (C++)
 
 A compact C++ implementation of a customizable multi-layer perceptron (MLP) for binary classification. The architecture, activations, and training loop are built from scratch with modular utility functions, allowing easy experimentation with layer sizes and learning hyperparameters.
 
