@@ -66,6 +66,9 @@ Binary labels for 10 samples (0/1):
 
 The program prints initial cost and progress every `10000` epochs, and final raw predicted probabilities against known `Y` labels.
 
+## Author
+Joshua Dayal
+
 ---
 
 Built for learning and exploration; not yet optimized for production use.
