@@ -341,7 +341,7 @@ int main(){
 
 
 	std::this_thread::sleep_for(std::chrono::seconds(0));
-	size_t epochs = 1000000;
+	size_t epochs = 10000;
 	
 	for (size_t i {0}; i < epochs; i++){
 		feed_forward();
