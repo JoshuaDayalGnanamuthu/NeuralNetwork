@@ -334,18 +334,19 @@ void back_propagation(const Matrix &Y, double learning_rate = 0.01) {
 int main(){
 	setdefault();	
 	feed_forward();
+	std::cout << "Neural Network in C++" << std::endl;
 	
 	double cost = cost_function(Nodes["A" + std::to_string(layers.size() - 1)], Y); // Final layer node
 	std::cout << "Cost: " << std::fixed << std::setprecision(15) << cost << std::endl;
 
 
-	std::this_thread::sleep_for(std::chrono::seconds(5));
+	std::this_thread::sleep_for(std::chrono::seconds(0));
 	size_t epochs = 1000000;
 	
 	for (size_t i {0}; i < epochs; i++){
 		feed_forward();
 		back_propagation(Y, 0.01);
-		if (i % 10000 == 0){
+		if (i % 10 == 0){
         cost = cost_function(Nodes["A" + std::to_string(layers.size() - 1)], Y);
 			std::cout << "==============================" << std::endl;
 			std::cout << " Epoch: " << i << std::endl;
