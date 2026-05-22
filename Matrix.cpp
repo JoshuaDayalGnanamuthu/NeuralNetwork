@@ -1,4 +1,4 @@
-#include "Matrix.h"
+#include "Matrix.hpp"
 
 /**
  * Constructor to generate a Matrix of size (row x column)
@@ -6,7 +6,7 @@
  * @param row The number of rows of the Matrix
  * @param column The number of columns of the Matrix
  */
-Matrix::Matrix(int row, int column): row(row), column(column) {
+Matrix::Matrix(size_t row, size_t column): row(row), column(column) {
   for ( size_t i {}; i < row; ++i ) {
     std::vector<double> r;
     for ( size_t j {}; j < column; ++j ) {
@@ -24,7 +24,7 @@ Matrix::Matrix(int row, int column): row(row), column(column) {
  * @param column The number of columns of the Matrix
  * @param value The value to assign to all entires
  */
-Matrix::Matrix(int row, int column, double value): row(row), column(column) {
+Matrix::Matrix(size_t row, size_t column, double value): row(row), column(column) {
   for ( size_t i {}; i < row; ++i ) {
     std::vector<double> r(column, value);
     this->matrix.push_back(r);
@@ -39,9 +39,9 @@ Matrix::Matrix(const Matrix&Object) {
   this->row = Object.row;
   this->column = Object.column;
 
-  for ( int i {}; i < this->row; ++i ) {
+  for ( size_t i {}; i < this->row; ++i ) {
     std::vector<double> new_row;
-    for ( int j {}; j < this->column; ++j ) {
+    for ( size_t j {}; j < this->column; ++j ) {
       new_row.push_back(Object.matrix[i][j]);
     }
     this->matrix.push_back(new_row);
@@ -52,11 +52,13 @@ Matrix::Matrix(const Matrix&Object) {
  * Uniform Random Float Generator (approx ~ [-1, 1])
  * @param fan_in The seed
  * @return a random double 
- */				     
+ */
+static std::random_device rd;
+static std::mt19937 gen(rd());
 double Matrix::he_random_generator(int fan_in) {
   double stdev = std::sqrt(2.0 / fan_in);
   std::normal_distribution<double> dist(0.0, stdev);
-  return dist(re);
+  return dist(gen);
 }
 
 /**
@@ -74,7 +76,7 @@ Matrix Matrix::transpose() const {
     }
     Object.matrix.push_back(new_row);
   }
-  return Matrix;
+  return Object;
 }
 
 /**
@@ -83,7 +85,7 @@ Matrix Matrix::transpose() const {
  * @param Object A const reference to the Matrix to be copied over
  * @return A reference to the Matrix that got copied into
  */
-Matrix& Matrix::operator=(const Matrix &Object) const {
+Matrix& Matrix::operator=(const Matrix &Object) {
   this->row = Object.row;
   this->column = Object.column;
   this->matrix.clear();
@@ -105,27 +107,20 @@ Matrix& Matrix::operator=(const Matrix &Object) const {
  * @return A Matrix Object representing the resultant sum 
  */
 Matrix Matrix::operator+(const Matrix &Object) const {
-  try {
-    if (this->row != Object.row || this->column != Object.column) {
-      throw std::invalid_arguement("Incompatible Matrix Sizes for Addition.\n");
-    }
-    Matrix Sum{};
-    Sum.row = this->row; Sum.column = this->column;
-
-    for ( size_t i {}; i < this->row; ++i ) {
-      std::vector<double> new_row;
-      for ( size_t j {}; j < this->column; ++j ) {
-	new_row.push_back(this->matrix[i][j] + Object.matrix[i][j]);
-      }
-      Sum.matrix.push_back(new_row);
-    }
-
-    return Sum;
+  if (this->row != Object.row || this->column != Object.column) {
+    throw std::invalid_argument("Incompatible Matrix Sizes for Addition.\n");
   }
+  Matrix Sum{};
+  Sum.row = this->row; Sum.column = this->column;
 
-  catch (const std::exception &e) {
-    std::cerr << "Exception: " << e.what() << std::endl;
+  for ( size_t i {}; i < this->row; ++i ) {
+    std::vector<double> new_row;
+    for ( size_t j {}; j < this->column; ++j ) {
+      new_row.push_back(this->matrix[i][j] + Object.matrix[i][j]);
+    }
+    Sum.matrix.push_back(new_row);
   }
+  return Sum;
 }
 
 /**
@@ -134,26 +129,18 @@ Matrix Matrix::operator+(const Matrix &Object) const {
  * @param Object A const reference to the right hand operand
  * @return A Matrix Object representing the resultant difference
  */
-Matrix Matrix::operator-(const Matrix &Object) const {                              
-  try {                                                                             
-    if (this->row != Object.row || this->column != Object.column) {                 
-      throw std::invalid_arguement("Incompatible Matrix Sizes for Addition.\n");    
-    }                                                                               
-    Matrix Sum{};
-    Sum.row = this->row; Sum.column = this->column;
-    
-    for ( size_t i {}; i < this->row; ++i ) {                                       
-      std::vector<double> new_row;                                                  
-      for ( size_t j {}; j < this->column; ++j ) {                                  
-        new_row.push_back(this->matrix[i][j] - Object.matrix[i][j]);                
-      }                                                                             
-      Sum.matrix.push_back(new_row);                                                
-    }                                                                                   return Sum;                                                                     
-  }                                                                                 
-                                                                                    
-  catch (const std::exception &e) {                                                 
-    std::cerr << "Exception: " << e.what() << std::endl;                            
-  }                                                                                 
+Matrix Matrix::operator-(const Matrix &Object) const {                                  if (this->row != Object.row || this->column != Object.column) {                         throw std::invalid_argument("Incompatible Matrix Sizes for Subtraction.\n");    
+  }                                                                               
+  Matrix Sum{};
+  Sum.row = this->row; Sum.column = this->column;
+ 
+  for ( size_t i {}; i < this->row; ++i ) {                                       
+    std::vector<double> new_row;                                                  
+    for ( size_t j {}; j < this->column; ++j ) {                                  
+      new_row.push_back(this->matrix[i][j] - Object.matrix[i][j]);                
+    }                                                                             
+    Sum.matrix.push_back(new_row);                                                
+  }                                                                                     return Sum;                                                                     
 }  
 
 /**
@@ -163,8 +150,11 @@ Matrix Matrix::operator-(const Matrix &Object) const {
  * @return A Matrix Object representing the resultant product
  */
 Matrix Matrix::operator*(const Matrix &Object) const {
+  if (this->column != Object.row) {
+    throw std::invalid_argument("Incompatible Matrix Sizes for Multiplication.\n");
+  }
   Matrix Object_T = Object.transpose();
-  int row = this->row, column = Object_T.row;
+  size_t row = this->row, column = Object_T.row;
   Matrix Product{};
   Product.row = row; Product.column = column;
 
@@ -173,13 +163,13 @@ Matrix Matrix::operator*(const Matrix &Object) const {
     std::vector<double> vec1 = this->matrix[i];
     for ( size_t j {}; j < column; ++j ) {
       std::vector<double> vec2 = Object_T.matrix[j];
-      double sum;
+      double sum = 0.0;
 
       if (vec1.size() != vec2.size()) {
 	throw std::invalid_argument("Incompatible Matrix Sizes for Multiplication.\n");
       }
-      for ( size_t k {}; k < vec1.sie(); ++k ) {
-	sum += vec1[k] + vec2[k];
+      for ( size_t k {}; k < vec1.size(); ++k ) {
+	sum += vec1[k] * vec2[k];
       }
       new_row.push_back(sum);
     }
@@ -193,9 +183,16 @@ Matrix Matrix::operator*(const Matrix &Object) const {
  * @param index The index of the corresponding row (zero indexed)
  * @return A vector of doubles corresponding to the indexed row
  */
-std::vector<double>& Matrix::operator[](int index) {
-  if (index < 0 || index >= this->row) {
-    throw std::invalid_arguement("Index Out of Bounds.\n");
+std::vector<double>& Matrix::operator[](size_t index) {
+  if (index >= this->row) {
+    throw std::invalid_argument("Index Out of Bounds.\n");
+  }
+  return this->matrix[index];
+}
+
+const std::vector<double>& Matrix::operator[](size_t index) const {
+  if (index >= this->row) {
+    throw std::invalid_argument("Index Out of Bounds.\n");
   }
   return this->matrix[index];
 }
@@ -207,7 +204,7 @@ std::vector<double>& Matrix::operator[](int index) {
  * @param Object A const reference to the Matrix Objet to be printed
  * @return A reference to the passed output stream buffer
  */
-std::ostream& operator<<(std::ostream &os, const Matrix &Object) const {
+std::ostream& operator<<(std::ostream &os, const Matrix &Object) {
   for ( size_t i {}; i < Object.row; ++i ) {
     os << "[";
     for ( size_t j {}; j < Object.column; ++j ) {
