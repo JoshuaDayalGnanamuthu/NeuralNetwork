@@ -1,6 +1,6 @@
 #include <unordered_map>
 #include <string>
-#include "Matrix.h"
+#include "Matrix.hpp"
 
 class NeuralNetwork {
 public:
@@ -14,7 +14,7 @@ private:
 
   void sigmoid(Matrix &Object);
   void relu(Matrix &Object);
-  void leaky_relu(Matrix &Object);
+  void leakyrelu(Matrix &Object, double aplha = 0.01);
 
   void setdefault();
   void feedforward();
