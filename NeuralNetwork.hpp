@@ -1,11 +1,10 @@
-#include <vector>
 #include <unordered_map>
+#include <string>
+#include "Matrix.h"
 
-
-using Matrix = std::vector<std::vector<double>>;
 class NeuralNetwork {
 public:
-  NeuralNetwork() {};
+  NeuralNetwork(Matrix &X, Matrix &Y) {};
   
 private:
   std::unordered_map<std::string, Matrix> weights;
@@ -13,9 +12,17 @@ private:
   std::unordered_map<std::string, Matrix> Nodes;
   std::vector<int> layers {2, 3, 4, 3, 1}; // Hidden Layers Structure
 
-  Matrix generator(int row, int column);
-  Matrix
-  double he_random_generator(int fan_in);
-  double random_generator();
+  void sigmoid(Matrix &Object);
+  void relu(Matrix &Object);
+  void leaky_relu(Matrix &Object);
+
+  void setdefault();
+  void feedforward();
+  void backpropogation();
+  
+  void analysis();
+  double cost(Matrix &Node, Matrix &Y);
+ 
+ 
  
 };
