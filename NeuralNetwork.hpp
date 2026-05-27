@@ -33,6 +33,8 @@ private:
   void sigmoid_derivate(Matrix &Object);
   void relu_derivative(Matrix &Object);
   void leakyrelu_derivatvie(Matrix &Object);
+
+  void initialize_parameters();
   
   void setdefault();
   void feedforward();
@@ -40,6 +42,8 @@ private:
   
   void analysis();
   double cost(Matrix &Node, Matrix &Y);
+
+  void train(Matrix &X, Matrix &Y, int epochs = 1000, double learning_rate = 0.01, std::optional<int> batch_size, int print_interval = 100, double learning_rate_decay = 0.95, double decay_interval = 100, std::optional<int> early_stopping_patience, std::optional<Matrix> &validation_data, std::optional<Matrix> &class_Weights);
  
  
  
